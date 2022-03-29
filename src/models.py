@@ -17,3 +17,16 @@ class User(db.Model):
             "email": self.email,
             # do not serialize the password, its a security breach
         }
+
+class Task(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    task = db.Column(db.String(120), unique=True, nullable=False)
+    label = db.Column(db.Boolean(80), unique=False, nullable=False)
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "task": self.task,
+            "label" : self.label
+            # do not serialize the password, its a security breach
+        }
