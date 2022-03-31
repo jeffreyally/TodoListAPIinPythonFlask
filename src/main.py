@@ -55,6 +55,44 @@ def post_tasks():
 
     return jsonify(tasks), 200
 
+@app.route('/tasks/<int:id>', methods=['PUT'])
+def update_task(id):
+        body = request.get_json()
+        task = Task.query.get(id)
+        if task is None:
+            raise APIException('User not found', status_code=404)
+
+        if "task" in body:
+            task.task = body["task"]
+        if "label" in body:
+            task.label = body["label"]
+        db.session.commit()
+        task_query = Task.query.all()
+        tasks = list(map(lambda x: x.serialize(), task_query))
+        response_body = {
+            "msg": "Hello, this is your GET /user response "
+        }
+
+        return jsonify(tasks), 200
+
+
+@app.route('/tasks/<int:id>', methods=['DELETE'])
+def delete_task(id):
+    task = Task.query.get(id)
+    if task is None:
+        raise APIException('User not found', status_code=404)
+    db.session.delete(task)
+    db.session.commit()
+
+    task_query = Task.query.all()
+    tasks = list(map(lambda x: x.serialize(), task_query))
+    response_body = {
+        "msg": "Hello, this is your GET /user response "
+    }
+
+    return jsonify(tasks), 200
+ 
+
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3000))
