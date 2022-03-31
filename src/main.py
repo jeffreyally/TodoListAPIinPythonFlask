@@ -41,6 +41,20 @@ def get_tasks():
 
     return jsonify(tasks), 200
 
+@app.route('/tasks', methods=['POST'])
+def post_tasks():
+    body = request.get_json()
+    task = Task(task=body["task"],label=body["label"])
+    db.session.add(task)
+    db.session.commit()
+    task_query = Task.query.all()
+    tasks = list(map(lambda x: x.serialize(), task_query))
+    response_body = {
+        "msg": "Hello, this is your GET /user response "
+    }
+
+    return jsonify(tasks), 200
+
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3000))
