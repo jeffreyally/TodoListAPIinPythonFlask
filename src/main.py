@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User, Task
+from models import db, User, Todo
 #from models import Person
 
 app = Flask(__name__)
@@ -30,67 +30,67 @@ def handle_invalid_usage(error):
 def sitemap():
     return generate_sitemap(app)
 
-@app.route('/tasks', methods=['GET'])
-def get_tasks():
+@app.route('/todos', methods=['GET'])
+def get_todos():
 
-    task_query = Task.query.all()
-    tasks = list(map(lambda x: x.serialize(), task_query))
+    todo_query = Todo.query.all()
+    todos = list(map(lambda x: x.serialize(), todo_query))
     response_body = {
         "msg": "Hello, this is your GET /user response "
     }
 
-    return jsonify(tasks), 200
+    return jsonify(todos), 200
 
-@app.route('/tasks', methods=['POST'])
-def post_tasks():
+@app.route('/todos', methods=['POST'])
+def post_todo():
     body = request.get_json()
-    task = Task(task=body["task"],label=body["label"])
-    db.session.add(task)
+    todo = Todo(done=body["done"],label=body["label"])
+    db.session.add(todo)
     db.session.commit()
-    task_query = Task.query.all()
-    tasks = list(map(lambda x: x.serialize(), task_query))
+    todo_query = Todo.query.all()
+    todos = list(map(lambda x: x.serialize(), todo_query))
     response_body = {
         "msg": "Hello, this is your GET /user response "
     }
 
-    return jsonify(tasks), 200
+    return jsonify(todos), 200
 
-@app.route('/tasks/<int:id>', methods=['PUT'])
-def update_task(id):
+@app.route('/todos/<int:id>', methods=['PUT'])
+def update_todo(id):
         body = request.get_json()
-        task = Task.query.get(id)
-        if task is None:
+        todo = Todo.query.get(id)
+        if todo is None:
             raise APIException('User not found', status_code=404)
 
-        if "task" in body:
-            task.task = body["task"]
+        if "done" in body:
+            todo.done = body["done"]
         if "label" in body:
-            task.label = body["label"]
+            todo.label = body["label"]
         db.session.commit()
-        task_query = Task.query.all()
-        tasks = list(map(lambda x: x.serialize(), task_query))
+        todo_query = Todo.query.all()
+        todos = list(map(lambda x: x.serialize(), todo_query))
         response_body = {
             "msg": "Hello, this is your GET /user response "
         }
 
-        return jsonify(tasks), 200
+        return jsonify(todos), 200
 
 
-@app.route('/tasks/<int:id>', methods=['DELETE'])
-def delete_task(id):
-    task = Task.query.get(id)
-    if task is None:
+@app.route('/todos/<int:id>', methods=['DELETE'])
+def delete_todo(id):
+    todo = Todo.query.get(id)
+    if todo is None:
         raise APIException('User not found', status_code=404)
-    db.session.delete(task)
+    db.session.delete(todo)
     db.session.commit()
 
-    task_query = Task.query.all()
-    tasks = list(map(lambda x: x.serialize(), task_query))
+    todo_query = todo.query.all()
+    todos = list(map(lambda x: x.serialize(), todo_query))
     response_body = {
         "msg": "Hello, this is your GET /user response "
     }
 
-    return jsonify(tasks), 200
+    return jsonify(todos), 200
  
 
 # this only runs if `$ python src/main.py` is executed
